@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption API Tester</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Encryption API Tester</h1>
+        <div class="form-group">
+            <label for="message">Message to Encrypt</label>
+            <textarea id="message" placeholder="Enter your message here..."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="method">Encryption Method</label>
+            <select id="method">
+                <option value="quantum">Quantum Encryption</option>
+                <option value="hybrid">Hybrid Encryption</option>
+                <option value="asymmetric">Asymmetric Encryption</option>
+            </select>
+        </div>
+        <button id="encrypt" type="button">Encrypt Message</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Function to send the encryption request
+        const encryptMessage = async (message, method) => {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/encrypt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message, method }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Encrypted Message:', data.encryptedMessage);
+                return data.encryptedMessage;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        // Add an event listener to the button
+        document.getElementById('encrypt').addEventListener('click', async () => {
+            // Get the user input
+            const message = document.getElementById('message').value;
+            const method = document.getElementById('method').value;
+
+            if (!message.trim()) {
+                alert('Please enter a message to encrypt.');
+                return;
+            }
+
+            // Call the encryption function
+            const encryptedMessage = await encryptMessage(message, method);
+
+            // Display the result
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = encryptedMessage ? `Encrypted Message: ${encryptedMessage}` : 'An error occurred during encryption.';
+        });
+    </script>
+</body>
+</html>
